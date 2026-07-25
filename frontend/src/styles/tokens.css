@@ -1,0 +1,116 @@
+/* =========================================================
+   SmartInfra Design Tokens
+   Civic / engineering-record aesthetic: paper backgrounds,
+   route-blue accent, hairline rules, monospace for record data
+   (report IDs, timestamps, coordinates) so the app reads like
+   an official ledger rather than a generic SaaS dashboard.
+   ========================================================= */
+
+:root {
+  /* --- Color: light (default) --- */
+  --color-bg: #EEF0EA;
+  --color-surface: #FFFFFF;
+  --color-surface-raised: #FBFBF8;
+  --color-ink: #16202B;
+  --color-ink-muted: #56636F;
+  --color-ink-faint: #8A9299;
+  --color-line: #D8D9D2;
+  --color-line-strong: #BFC2B9;
+
+  --color-accent: #2452B0;
+  --color-accent-ink: #FFFFFF;
+  --color-accent-soft: #E4EAF7;
+
+  --color-signal-submitted: #C97A1E;
+  --color-signal-submitted-soft: #FBEEDD;
+  --color-signal-progress: #2452B0;
+  --color-signal-progress-soft: #E4EAF7;
+  --color-signal-resolved: #2E7D5B;
+  --color-signal-resolved-soft: #E2F0E9;
+  --color-signal-rejected: #B23A3A;
+  --color-signal-rejected-soft: #F6E4E4;
+
+  --color-danger: #B23A3A;
+  --color-danger-soft: #F6E4E4;
+
+  /* --- Typography --- */
+  --font-display: 'Space Grotesk', 'IBM Plex Sans', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-md: 1.125rem;
+  --fs-lg: 1.375rem;
+  --fs-xl: 1.75rem;
+  --fs-2xl: 2.25rem;
+
+  --lh-tight: 1.2;
+  --lh-normal: 1.5;
+
+  /* --- Spacing scale --- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  /* --- Radius / elevation --- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --shadow-sm: 0 1px 2px rgba(22, 32, 43, 0.06);
+  --shadow-md: 0 4px 16px rgba(22, 32, 43, 0.08);
+  --shadow-lg: 0 12px 32px rgba(22, 32, 43, 0.14);
+
+  /* --- Motion --- */
+  --ease-standard: cubic-bezier(0.2, 0.6, 0.2, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+}
+
+/* --- Color: dark --- */
+[data-theme='dark'] {
+  --color-bg: #10151C;
+  --color-surface: #182029;
+  --color-surface-raised: #1E2733;
+  --color-ink: #E7E9E4;
+  --color-ink-muted: #9AA5AE;
+  --color-ink-faint: #6B7580;
+  --color-line: #2A323C;
+  --color-line-strong: #384250;
+
+  --color-accent: #7C9EE8;
+  --color-accent-ink: #0E1420;
+  --color-accent-soft: #202B42;
+
+  --color-signal-submitted: #E0A552;
+  --color-signal-submitted-soft: #332612;
+  --color-signal-progress: #7C9EE8;
+  --color-signal-progress-soft: #1D2740;
+  --color-signal-resolved: #5FBE93;
+  --color-signal-resolved-soft: #16301F;
+  --color-signal-rejected: #E08080;
+  --color-signal-rejected-soft: #3A1D1D;
+
+  --color-danger: #E08080;
+  --color-danger-soft: #3A1D1D;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+/* Respect reduced-motion preference globally */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
