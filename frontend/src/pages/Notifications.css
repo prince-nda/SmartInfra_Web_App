@@ -1,0 +1,35 @@
+.notification-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  cursor: pointer;
+}
+
+.notification-item.unread {
+  border-left: 3px solid var(--color-accent);
+}
+
+.notification-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.notification-item.read .notification-dot { visibility: hidden; }
+
+.notification-body p { font-size: var(--fs-sm); }
+.notification-body span {
+  font-size: var(--fs-xs);
+  color: var(--color-ink-faint);
+  font-family: var(--font-mono);
+}

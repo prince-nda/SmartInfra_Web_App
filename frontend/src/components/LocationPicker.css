@@ -1,0 +1,23 @@
+.location-picker {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  background: var(--color-surface-raised);
+  margin-top: var(--space-2);
+}
+
+.location-picker-map {
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+}
+
+.location-picker-map .leaflet-container {
+  background: var(--color-surface);
+}
+
+/* Dark mode: invert map tiles so they don't glow white against a dark UI,
+   same trick used for the TrackIt RW Leaflet integration. */
+[data-theme='dark'] .location-picker-map .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9);
+}

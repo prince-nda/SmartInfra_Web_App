@@ -1,0 +1,31 @@
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .profile-grid { grid-template-columns: 1fr; }
+}
+
+.profile-section {
+  padding: var(--space-6);
+}
+
+.profile-section h2 {
+  font-size: var(--fs-md);
+  margin-bottom: var(--space-1);
+}
+
+.profile-section .section-hint {
+  color: var(--color-ink-muted);
+  font-size: var(--fs-sm);
+  margin-bottom: var(--space-4);
+}
+
+.profile-readonly {
+  font-size: var(--fs-sm);
+  color: var(--color-ink-muted);
+  padding: 0.65rem 0;
+}
