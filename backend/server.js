@@ -11,7 +11,19 @@ const notificationRoutes = require('./routes/notificationRoutes');
 const app = express();
 
 // Middleware
-app.use(cors({ origin: process.env.CLIENT_URL }));
+// CLIENT_URL supports comma-separated origins, e.g.
+// "http://localhost:5173,https://smartinfra.vercel.app" - so local dev
+// and the deployed frontend both work without touching this file.
+const allowedOrigins = (process.env.CLIENT_URL || '').split(',').map((o) => o.trim()).filter(Boolean);
+app.use(cors({
+  origin(origin, callback) {
+    // Allow non-browser requests (curl, server-to-server) which send no origin header
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -33,7 +45,7 @@ app.use((req, res) => {
 });
 
 // Global error handler
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   console.error(err.stack);
   res.status(err.status || 500).json({ message: err.message || 'Something went wrong' });
 });
