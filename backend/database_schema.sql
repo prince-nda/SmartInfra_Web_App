@@ -63,6 +63,7 @@ CREATE TABLE users (
   is_email_verified BOOLEAN NOT NULL DEFAULT FALSE,
   is_active         BOOLEAN NOT NULL DEFAULT TRUE,
   is_super_admin    BOOLEAN NOT NULL DEFAULT FALSE,
+  must_change_password BOOLEAN NOT NULL DEFAULT FALSE,
   created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -136,7 +137,6 @@ CREATE TABLE report_images (
 CREATE INDEX IF NOT EXISTS idx_images_report ON report_images(report_id);
 
 -- =========================================================
--- REPORT NOTES (FR5.3 - admin internal notes documenting actions taken;
 -- append-only history, never shown to citizens)
 -- =========================================================
 CREATE TABLE report_notes (
@@ -199,4 +199,3 @@ DROP TRIGGER IF EXISTS trg_reports_updated_at ON issue_reports;
 CREATE TRIGGER trg_reports_updated_at
   BEFORE UPDATE ON issue_reports
   FOR EACH ROW EXECUTE FUNCTION set_updated_at();
-
