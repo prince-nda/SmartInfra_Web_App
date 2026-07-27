@@ -22,8 +22,8 @@ export const exportReports = async (params = {}, format = 'csv') => {
 export const assignReportToStaff = (reportId, staffId) =>
   apiClient.patch(`/admin/reports/${reportId}/assign`, { staffId }).then((r) => r.data);
 
-export const updateReportStatus = (reportId, status) =>
-  apiClient.patch(`/admin/reports/${reportId}/status`, { status }).then((r) => r.data);
+export const updateReportStatus = (reportId, status, message) =>
+  apiClient.patch(`/admin/reports/${reportId}/status`, { status, message }).then((r) => r.data);
 
 export const addReportNote = (reportId, note) =>
   apiClient.post(`/admin/reports/${reportId}/notes`, { note }).then((r) => r.data);

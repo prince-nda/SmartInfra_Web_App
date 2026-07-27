@@ -5,6 +5,7 @@ import { fetchReportById, CATEGORY_OPTIONS } from '../api/reports';
 import { addReportNote } from '../api/admin';
 import CategoryIcon from '../components/CategoryIcon';
 import StatusBadge from '../components/StatusBadge';
+import ReportMap from '../components/ReportMap';
 import './Dashboard.css';
 import './ReportDetail.css';
 
@@ -163,6 +164,9 @@ export default function ReportDetail() {
                 <span>Coordinates</span>
                 <span>{Number(report.gps_lat).toFixed(5)}, {Number(report.gps_long).toFixed(5)}</span>
               </div>
+            )}
+            {report.gps_lat && (
+              <ReportMap lat={report.gps_lat} lng={report.gps_long} label={`Report #${report.report_id}`} />
             )}
             <div className="detail-row"><span>Submitted</span><span>{new Date(report.date_submitted).toLocaleDateString()}</span></div>
           </div>

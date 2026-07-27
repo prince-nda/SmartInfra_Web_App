@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggle from './ThemeToggle';
 import './Navbar.css';
@@ -15,7 +15,7 @@ export default function Navbar() {
   return (
     <header className="navbar">
       <div className="container navbar-inner">
-        <div className="navbar-brand">
+        <Link to="/" className="navbar-brand">
           <span className="navbar-mark" aria-hidden="true">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
               <path d="M4 20V9l8-6 8 6v11" strokeLinecap="round" strokeLinejoin="round" />
@@ -24,7 +24,7 @@ export default function Navbar() {
             </svg>
           </span>
           <span className="navbar-title">SmartInfra</span>
-        </div>
+        </Link>
 
         {user && user.role === 'admin' && (
           <nav className="navbar-links">
@@ -67,7 +67,10 @@ export default function Navbar() {
               <button className="btn btn-ghost" onClick={handleLogout}>Log out</button>
             </>
           ) : (
-            <NavLink to="/login" className="btn btn-secondary">Log in</NavLink>
+            <>
+              <NavLink to="/login" className="btn btn-ghost">Log in</NavLink>
+              <NavLink to="/register" className="btn btn-primary">Get started</NavLink>
+            </>
           )}
         </div>
       </div>

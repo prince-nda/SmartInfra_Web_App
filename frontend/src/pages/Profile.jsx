@@ -16,7 +16,6 @@ export default function Profile() {
     fullName: user?.full_name || '',
     phone: user?.phone || '',
     district: user?.district || '',
-    nationalIdNo: user?.national_id_no || '',
   });
   const [profileError, setProfileError] = useState('');
   const [profileSuccess, setProfileSuccess] = useState('');
@@ -38,13 +37,13 @@ export default function Profile() {
     setProfileSuccess('');
 
     if (!form.fullName.trim()) return setProfileError('Full name cannot be empty');
+    if (!form.phone.trim()) return setProfileError('Phone number cannot be empty');
 
     setSavingProfile(true);
     try {
       const payload = { fullName: form.fullName, phone: form.phone };
       if (isCitizen) {
         payload.district = form.district;
-        payload.nationalIdNo = form.nationalIdNo;
       }
       const { user: updatedUser } = await updateProfile(payload);
       setUser(updatedUser);
@@ -128,51 +127,36 @@ export default function Profile() {
               />
             </div>
             <div className="field">
-              <label htmlFor="phone">Phone (optional)</label>
+              <label htmlFor="phone">Phone</label>
               <input
                 id="phone"
+                required
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
                 placeholder="07xxxxxxxx"
               />
-              <span className="hint">Used for future SMS notifications</span>
+              <span className="hint">Your primary contact number</span>
             </div>
 
             {isCitizen && (
-              <>
-                <div className="field">
-                  <label htmlFor="district">District</label>
-                  <select
-                    id="district"
-                    value={form.district}
-                    onChange={(e) => setForm({ ...form, district: e.target.value })}
-                  >
-                    <option value="">Select district</option>
-                    {RWANDA_DISTRICTS.map((d) => <option key={d} value={d}>{d}</option>)}
-                  </select>
-                </div>
-                <div className="field">
-                  <label htmlFor="nationalIdNo">National ID</label>
-                  <input
-                    id="nationalIdNo"
-                    value={form.nationalIdNo}
-                    onChange={(e) => setForm({ ...form, nationalIdNo: e.target.value })}
-                  />
-                </div>
-              </>
+              <div className="field">
+                <label htmlFor="district">District</label>
+                <select
+                  id="district"
+                  value={form.district}
+                  onChange={(e) => setForm({ ...form, district: e.target.value })}
+                >
+                  <option value="">Select district</option>
+                  {RWANDA_DISTRICTS.map((d) => <option key={d} value={d}>{d}</option>)}
+                </select>
+              </div>
             )}
 
-            {!isCitizen && (user.staff_id || user.department) && (
-              <>
-                <div className="field">
-                  <label>Staff ID</label>
-                  <div className="profile-readonly mono">{user.staff_id}</div>
-                </div>
-                <div className="field">
-                  <label>Department</label>
-                  <div className="profile-readonly">{user.department}</div>
-                </div>
-              </>
+            {!isCitizen && user.department && (
+              <div className="field">
+                <label>Department</label>
+                <div className="profile-readonly">{user.department}</div>
+              </div>
             )}
 
             <button type="submit" className="btn btn-primary" disabled={savingProfile}>

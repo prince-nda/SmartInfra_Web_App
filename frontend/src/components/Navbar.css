@@ -18,7 +18,9 @@
   align-items: center;
   gap: var(--space-2);
   color: var(--color-accent);
+  text-decoration: none;
 }
+.navbar-brand:hover { text-decoration: none; }
 
 .navbar-title {
   font-family: var(--font-display);
