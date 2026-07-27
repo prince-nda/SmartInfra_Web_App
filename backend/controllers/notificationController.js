@@ -27,12 +27,15 @@ async function notifyReportSubmitted({ citizenId, citizenEmail, citizenName, cit
 }
 
 /** Fires the in-app notification, status-update email, and SMS (if a phone is on file). */
-async function notifyStatusUpdate({ citizenId, citizenEmail, citizenName, citizenPhone, reportId, newStatus }) {
-  const message = `Your report #${reportId} status changed to "${newStatus}".`;
+async function notifyStatusUpdate({ citizenId, citizenEmail, citizenName, citizenPhone, reportId, newStatus, customMessage }) {
+  const statusLabel = newStatus.replace('_', ' ');
+  const message = customMessage
+    ? `Your report #${reportId} status changed to "${statusLabel}". ${customMessage}`
+    : `Your report #${reportId} status changed to "${statusLabel}".`;
   await createNotification({ userId: citizenId, reportId, message });
   await Promise.all([
-    sendStatusUpdateEmail(citizenEmail, citizenName, reportId, newStatus),
-    citizenPhone ? sendStatusUpdateSms(citizenPhone, reportId, newStatus) : null,
+    sendStatusUpdateEmail(citizenEmail, citizenName, reportId, newStatus, customMessage),
+    citizenPhone ? sendStatusUpdateSms(citizenPhone, reportId, newStatus, customMessage) : null,
   ]);
 }
 

@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { getMyNotifications, markAsRead, markAllAsRead } = require('../controllers/notificationController');
-const { authenticate } = require('../middleware/jwt_auth');
+const { authenticate, blockIfMustChangePassword } = require('../middleware/jwt_auth');
 
-router.use(authenticate);
+router.use(authenticate, blockIfMustChangePassword);
 
 router.get('/mine', getMyNotifications);
 router.patch('/read-all', markAllAsRead);

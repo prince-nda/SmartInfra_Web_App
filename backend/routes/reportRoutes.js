@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { createReport, getMyReports, getReportById } = require('../controllers/reportController');
-const { authenticate, authorize } = require('../middleware/jwt_auth');
+const { authenticate, authorize, blockIfMustChangePassword } = require('../middleware/jwt_auth');
 const { handleImageUpload } = require('../middleware/multer_image');
 
-// All report routes require a logged-in user
-router.use(authenticate);
+// All report routes require a logged-in user with no pending forced password change
+router.use(authenticate, blockIfMustChangePassword);
 
 router.post('/', authorize('citizen'), handleImageUpload, createReport);
 router.get('/mine', authorize('citizen'), getMyReports);

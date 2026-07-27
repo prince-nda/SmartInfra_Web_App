@@ -4,6 +4,8 @@ const { notifyStatusUpdate } = require('./notificationController');
 const { logAction } = require('../utils/auditLog');
 const { toCsv } = require('../utils/csv');
 const { streamReportsPdf } = require('../utils/pdfExport');
+const { generateTempPassword } = require('../utils/tokenUtils');
+const { sendStaffWelcomeEmail } = require('../utils/email');
 
 const VALID_STATUSES = ['submitted', 'in_progress', 'resolved', 'rejected'];
 const SALT_ROUNDS = 10;
@@ -187,7 +189,7 @@ async function assignReport(req, res) {
  */
 async function updateReportStatus(req, res) {
   const { id } = req.params;
-  const { status } = req.body;
+  const { status, message } = req.body;
 
   if (!status || !VALID_STATUSES.includes(status)) {
     return res.status(400).json({ message: `Status must be one of: ${VALID_STATUSES.join(', ')}` });
@@ -217,6 +219,7 @@ async function updateReportStatus(req, res) {
       citizenPhone: citizen.phone,
       reportId: report.report_id,
       newStatus: status,
+      customMessage: message?.trim() || null,
     });
 
     await logAction({
@@ -224,7 +227,7 @@ async function updateReportStatus(req, res) {
       action: 'update_report_status',
       entityType: 'report',
       entityId: Number(id),
-      details: { from: previousStatus, to: status },
+      details: { from: previousStatus, to: status, message: message?.trim() || null },
     });
 
     return res.json({ message: 'Report status updated', report });
@@ -333,7 +336,7 @@ async function getAnalytics(req, res) {
 async function getStaffList(req, res) {
   try {
     const result = await pool.query(
-      `SELECT user_id, full_name, email, staff_id, department, is_active, is_super_admin, created_at
+      `SELECT user_id, full_name, email, department, is_active, is_super_admin, must_change_password, created_at
        FROM users WHERE role = 'admin' ORDER BY is_super_admin DESC, full_name`
     );
     return res.json({ staff: result.rows });
@@ -349,15 +352,18 @@ async function getStaffList(req, res) {
  * account (route-gated by requireSuperAdmin), which is the sole path to
  * the 'admin' role - the public register endpoint can never be used to
  * self-elevate privileges.
+ *
+ * The system generates a temporary password rather than letting the
+ * super-admin choose one - it's returned once in this response so it can
+ * be handed to the new staff member, and the account is flagged
+ * must_change_password so they're forced to set a real password on their
+ * first login before they can access anything else.
  */
 async function createStaff(req, res) {
-  const { fullName, email, phone, password, staffId, department, isSuperAdmin } = req.body;
+  const { fullName, email, phone, department, isSuperAdmin } = req.body;
 
-  if (!fullName || !email || !password || !staffId) {
-    return res.status(400).json({ message: 'fullName, email, password, and staffId are required' });
-  }
-  if (password.length < 8) {
-    return res.status(400).json({ message: 'Password must be at least 8 characters' });
+  if (!fullName || !email) {
+    return res.status(400).json({ message: 'fullName and email are required' });
   }
 
   try {
@@ -366,12 +372,13 @@ async function createStaff(req, res) {
       return res.status(409).json({ message: 'An account with this email already exists' });
     }
 
-    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+    const tempPassword = generateTempPassword();
+    const passwordHash = await bcrypt.hash(tempPassword, SALT_ROUNDS);
     const result = await pool.query(
-      `INSERT INTO users (full_name, email, phone, password_hash, role, staff_id, department, is_email_verified, is_super_admin)
-       VALUES ($1, $2, $3, $4, 'admin', $5, $6, TRUE, $7)
-       RETURNING user_id, full_name, email, phone, role, staff_id, department, is_super_admin, created_at`,
-      [fullName, email.toLowerCase(), phone || null, passwordHash, staffId, department || null, !!isSuperAdmin]
+      `INSERT INTO users (full_name, email, phone, password_hash, role, department, is_email_verified, is_super_admin, must_change_password)
+       VALUES ($1, $2, $3, $4, 'admin', $5, TRUE, $6, TRUE)
+       RETURNING user_id, full_name, email, phone, role, department, is_super_admin, created_at`,
+      [fullName, email.toLowerCase(), phone || null, passwordHash, department || null, !!isSuperAdmin]
     );
 
     await logAction({
@@ -382,7 +389,12 @@ async function createStaff(req, res) {
       details: { email: result.rows[0].email, isSuperAdmin: !!isSuperAdmin },
     });
 
-    return res.status(201).json({ message: 'Staff account created', user: result.rows[0] });
+    await sendStaffWelcomeEmail(result.rows[0].email, result.rows[0].full_name, tempPassword);
+
+    return res.status(201).json({
+      message: `Staff account created. Login credentials were emailed to ${result.rows[0].email}.`,
+      user: result.rows[0],
+    });
   } catch (err) {
     console.error('Create staff error:', err);
     return res.status(500).json({ message: 'Could not create staff account' });
