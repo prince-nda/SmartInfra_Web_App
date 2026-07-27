@@ -1,15 +1,31 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { fetchMyReports, CATEGORY_OPTIONS } from '../api/reports';
 import CategoryIcon from '../components/CategoryIcon';
 import StatusBadge from '../components/StatusBadge';
 import './Dashboard.css';
 
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
+}
+
 export default function Dashboard() {
+  const { user } = useAuth();
   const [reports, setReports] = useState([]);
+  const [allReports, setAllReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState('');
   const [category, setCategory] = useState('');
+
+  // Unfiltered fetch, once, purely for the stat strip - keeps the numbers
+  // stable regardless of what filters are applied to the grid below.
+  useEffect(() => {
+    fetchMyReports().then(setAllReports);
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -21,11 +37,42 @@ export default function Dashboard() {
       .finally(() => setLoading(false));
   }, [status, category]);
 
+  const stats = {
+    total: allReports.length,
+    submitted: allReports.filter((r) => r.status === 'submitted').length,
+    in_progress: allReports.filter((r) => r.status === 'in_progress').length,
+    resolved: allReports.filter((r) => r.status === 'resolved').length,
+  };
+
   return (
     <div className="container page">
-      <div className="page-header">
+      <div className="dashboard-welcome">
+        <h1>{getGreeting()}{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}.</h1>
+        <p>Here's where things stand with what you've reported.</p>
+      </div>
+
+      <div className="stat-strip">
+        <div className="card stat-strip-item">
+          <div className="stat-strip-value">{stats.total}</div>
+          <div className="stat-strip-label">Total reports</div>
+        </div>
+        <div className="card stat-strip-item">
+          <div className="stat-strip-value" style={{ color: 'var(--color-signal-submitted)' }}>{stats.submitted}</div>
+          <div className="stat-strip-label">Submitted</div>
+        </div>
+        <div className="card stat-strip-item">
+          <div className="stat-strip-value" style={{ color: 'var(--color-signal-progress)' }}>{stats.in_progress}</div>
+          <div className="stat-strip-label">In progress</div>
+        </div>
+        <div className="card stat-strip-item">
+          <div className="stat-strip-value" style={{ color: 'var(--color-signal-resolved)' }}>{stats.resolved}</div>
+          <div className="stat-strip-label">Resolved</div>
+        </div>
+      </div>
+
+      <div className="page-header" style={{ marginTop: 'var(--space-6)' }}>
         <div>
-          <h1>My reports</h1>
+          <h1 style={{ fontSize: 'var(--fs-lg)' }}>My reports</h1>
           <p>Everything you've submitted, and where it stands.</p>
         </div>
         <Link to="/reports/new" className="btn btn-primary">+ New report</Link>

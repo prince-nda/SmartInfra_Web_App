@@ -1,9 +1,10 @@
 /* =========================================================
    SmartInfra Design Tokens
    Civic / engineering-record aesthetic: paper backgrounds,
-   route-blue accent, hairline rules, monospace for record data
-   (report IDs, timestamps, coordinates) so the app reads like
-   an official ledger rather than a generic SaaS dashboard.
+   teal/petrol accent (ties to the "clean and green" identity),
+   hairline rules, monospace for record data (report IDs,
+   timestamps, coordinates) so the app reads like an official
+   ledger rather than a generic SaaS dashboard.
    ========================================================= */
 
 :root {
@@ -17,14 +18,14 @@
   --color-line: #D8D9D2;
   --color-line-strong: #BFC2B9;
 
-  --color-accent: #2452B0;
+  --color-accent: #0F766E;
   --color-accent-ink: #FFFFFF;
-  --color-accent-soft: #E4EAF7;
+  --color-accent-soft: #DEF2EF;
 
   --color-signal-submitted: #C97A1E;
   --color-signal-submitted-soft: #FBEEDD;
-  --color-signal-progress: #2452B0;
-  --color-signal-progress-soft: #E4EAF7;
+  --color-signal-progress: #0F766E;
+  --color-signal-progress-soft: #DEF2EF;
   --color-signal-resolved: #2E7D5B;
   --color-signal-resolved-soft: #E2F0E9;
   --color-signal-rejected: #B23A3A;
@@ -84,14 +85,14 @@
   --color-line: #2A323C;
   --color-line-strong: #384250;
 
-  --color-accent: #7C9EE8;
+  --color-accent: #5EEAD4;
   --color-accent-ink: #0E1420;
-  --color-accent-soft: #202B42;
+  --color-accent-soft: #143330;
 
   --color-signal-submitted: #E0A552;
   --color-signal-submitted-soft: #332612;
-  --color-signal-progress: #7C9EE8;
-  --color-signal-progress-soft: #1D2740;
+  --color-signal-progress: #5EEAD4;
+  --color-signal-progress-soft: #143330;
   --color-signal-resolved: #5FBE93;
   --color-signal-resolved-soft: #16301F;
   --color-signal-rejected: #E08080;

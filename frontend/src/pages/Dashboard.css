@@ -93,6 +93,7 @@
   color: var(--color-ink-muted);
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -104,4 +105,45 @@
   font-size: var(--fs-xs);
   color: var(--color-ink-faint);
   font-family: var(--font-mono);
+}
+
+/* --- Dashboard welcome banner + stat strip --- */
+.dashboard-welcome {
+  margin-bottom: var(--space-5);
+}
+
+.dashboard-welcome h1 {
+  font-size: var(--fs-xl);
+  margin-bottom: var(--space-1);
+}
+
+.dashboard-welcome p {
+  color: var(--color-ink-muted);
+  font-size: var(--fs-sm);
+}
+
+.stat-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-3);
+}
+
+.stat-strip-item {
+  padding: var(--space-4);
+  text-align: center;
+}
+
+.stat-strip-value {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.stat-strip-label {
+  font-size: var(--fs-xs);
+  color: var(--color-ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-top: var(--space-1);
 }
