@@ -49,9 +49,10 @@ function sendReportSubmittedSms(phone, reportId) {
   return sendSms(phone, `SmartInfra: Your report #${reportId} was received and marked Submitted. Track it in the app.`);
 }
 
-function sendStatusUpdateSms(phone, reportId, newStatus) {
+function sendStatusUpdateSms(phone, reportId, newStatus, customMessage) {
   const label = newStatus.replace('_', ' ');
-  return sendSms(phone, `SmartInfra: Your report #${reportId} status changed to "${label}".`);
+  const base = `SmartInfra: Your report #${reportId} status changed to "${label}".`;
+  return sendSms(phone, customMessage ? `${base} ${customMessage}` : base);
 }
 
 module.exports = { sendSms, sendOtpSms, sendReportSubmittedSms, sendStatusUpdateSms, toE164 };

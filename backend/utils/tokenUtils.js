@@ -35,4 +35,18 @@ function generateOtp() {
   return { rawOtp, otpHash };
 }
 
-module.exports = { signAuthToken, generateRawAndHashedToken, hashToken, generateOtp };
+/**
+ * Generates a random, readable temporary password for admin-created staff
+ * accounts - avoids ambiguous characters (0/O, 1/l/I) so it's easy to
+ * type correctly when a super-admin hands it off verbally or in a message.
+ */
+function generateTempPassword() {
+  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  let result = '';
+  for (let i = 0; i < 12; i++) {
+    result += chars[crypto.randomInt(0, chars.length)];
+  }
+  return result;
+}
+
+module.exports = { signAuthToken, generateRawAndHashedToken, hashToken, generateOtp, generateTempPassword };

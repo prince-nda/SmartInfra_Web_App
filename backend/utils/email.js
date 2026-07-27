@@ -49,6 +49,27 @@ function sendPasswordResetOtpEmail(to, fullName, otp) {
   });
 }
 
+/**
+ * Sent to a newly-created staff account with their login email and
+ * system-generated temporary password. They're forced to set their own
+ * password on first login (must_change_password), so this credential
+ * is single-use in practice.
+ */
+function sendStaffWelcomeEmail(to, fullName, tempPassword) {
+  return sendEmail({
+    to,
+    subject: 'Your SmartInfra administrator account',
+    html: `<p>Hi ${fullName},</p>
+      <p>An administrator account has been created for you on SmartInfra. Use these details to log in:</p>
+      <p>
+        <strong>Email:</strong> ${to}<br/>
+        <strong>Temporary password:</strong> <span style="font-size: 20px; font-weight: 700; letter-spacing: 0.05em;">${tempPassword}</span>
+      </p>
+      <p>You'll be asked to set your own password the first time you log in. This temporary password will not work again after that.</p>
+      <p>If you weren't expecting this account, please contact your system administrator.</p>`,
+  });
+}
+
 function sendReportSubmittedEmail(to, fullName, reportId) {
   return sendEmail({
     to,
@@ -59,12 +80,13 @@ function sendReportSubmittedEmail(to, fullName, reportId) {
   });
 }
 
-function sendStatusUpdateEmail(to, fullName, reportId, newStatus) {
+function sendStatusUpdateEmail(to, fullName, reportId, newStatus, customMessage) {
   return sendEmail({
     to,
     subject: `SmartInfra: Report #${reportId} update`,
     html: `<p>Hi ${fullName},</p>
-      <p>Your infrastructure report <strong>#${reportId}</strong> status has changed to <strong>${newStatus}</strong>.</p>`,
+      <p>Your infrastructure report <strong>#${reportId}</strong> status has changed to <strong>${newStatus.replace('_', ' ')}</strong>.</p>
+      ${customMessage ? `<p>${customMessage}</p>` : ''}`,
   });
 }
 
@@ -72,6 +94,7 @@ module.exports = {
   sendEmail,
   sendVerificationOtpEmail,
   sendPasswordResetOtpEmail,
+  sendStaffWelcomeEmail,
   sendReportSubmittedEmail,
   sendStatusUpdateEmail,
 };

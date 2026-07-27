@@ -9,45 +9,49 @@ const OTP_TTL_MINUTES = 10;
 
 // Fields returned to the client - never the password hash
 const PUBLIC_USER_FIELDS = `
-  user_id, full_name, email, phone, role, national_id_no, district,
-  staff_id, department, is_email_verified, is_super_admin, created_at
+  user_id, full_name, email, phone, role, district,
+  department, is_email_verified, is_super_admin, must_change_password, created_at
 `;
 
 /**
  * POST /api/auth/register
- * Citizens self-register. Administrator accounts are created separately
- * by an existing admin (see adminController.createStaff) to avoid
+ * Citizens self-register with phone as their contact identifier (no
+ * National ID is collected). Administrator accounts are created
+ * separately by a super-admin (see adminController.createStaff) to avoid
  * anyone granting themselves admin rights through this public endpoint.
  *
- * NOTE: OTP delivery is by email for now (SMS via Twilio is pending
- * account setup - see utils/sms.js). Phone is optional and normalized
- * to E.164 if provided, so it's ready to use once SMS is switched back on.
+ * NOTE: OTP delivery is by email (SMS via Twilio is a stretch goal - see
+ * utils/sms.js). Phone is still normalized to E.164 so it's ready for
+ * SMS notifications and is the citizen's primary contact detail.
  */
 async function register(req, res) {
-  const { fullName, email, phone, password, nationalIdNo, district } = req.body;
+  const { fullName, email, phone, password, district } = req.body;
 
-  if (!fullName || !email || !password) {
-    return res.status(400).json({ message: 'Full name, email, and password are required' });
+  if (!fullName || !email || !phone || !password) {
+    return res.status(400).json({ message: 'Full name, email, phone, and password are required' });
   }
   if (password.length < 8) {
     return res.status(400).json({ message: 'Password must be at least 8 characters' });
   }
 
-  const normalizedPhone = phone ? toE164(phone) : null;
+  const normalizedPhone = toE164(phone);
 
   try {
-    const existing = await pool.query('SELECT user_id FROM users WHERE email = $1', [email.toLowerCase()]);
+    const existing = await pool.query(
+      'SELECT user_id FROM users WHERE email = $1 OR phone = $2',
+      [email.toLowerCase(), normalizedPhone]
+    );
     if (existing.rows.length > 0) {
-      return res.status(409).json({ message: 'An account with this email already exists' });
+      return res.status(409).json({ message: 'An account with this email or phone number already exists' });
     }
 
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
     const result = await pool.query(
-      `INSERT INTO users (full_name, email, phone, password_hash, role, national_id_no, district)
-       VALUES ($1, $2, $3, $4, 'citizen', $5, $6)
+      `INSERT INTO users (full_name, email, phone, password_hash, role, district)
+       VALUES ($1, $2, $3, $4, 'citizen', $5)
        RETURNING ${PUBLIC_USER_FIELDS}`,
-      [fullName, email.toLowerCase(), normalizedPhone, passwordHash, nationalIdNo || null, district || null]
+      [fullName, email.toLowerCase(), normalizedPhone, passwordHash, district || null]
     );
 
     const user = result.rows[0];
@@ -272,7 +276,9 @@ async function resetPassword(req, res) {
 /**
  * POST /api/auth/change-password  { currentPassword, newPassword }
  * For a logged-in user changing their own password - no email required,
- * unlike the forgot/reset flow which needs a working inbox.
+ * unlike the forgot/reset flow which needs a working inbox. Also clears
+ * must_change_password, so an admin-created staff account unblocks
+ * immediately after setting a real password (no re-login needed).
  */
 async function changePassword(req, res) {
   const { currentPassword, newPassword } = req.body;
@@ -295,9 +301,13 @@ async function changePassword(req, res) {
     }
 
     const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
-    await pool.query('UPDATE users SET password_hash = $1 WHERE user_id = $2', [passwordHash, req.user.userId]);
+    const updated = await pool.query(
+      `UPDATE users SET password_hash = $1, must_change_password = FALSE
+       WHERE user_id = $2 RETURNING ${PUBLIC_USER_FIELDS}`,
+      [passwordHash, req.user.userId]
+    );
 
-    return res.json({ message: 'Password updated successfully' });
+    return res.json({ message: 'Password updated successfully', user: updated.rows[0] });
   } catch (err) {
     console.error('Change password error:', err);
     return res.status(500).json({ message: 'Could not change password' });
@@ -305,14 +315,13 @@ async function changePassword(req, res) {
 }
 
 /**
- * PATCH /api/auth/me  { fullName, phone, district, nationalIdNo }
+ * PATCH /api/auth/me  { fullName, phone, district }
  * Lets a logged-in user edit their own profile. Email and role are not
  * editable here - email changes would need re-verification, and role
- * changes only ever happen via adminController.createStaff. Phone is
- * optional; pass an empty string to clear it.
+ * changes only ever happen via adminController.createStaff.
  */
 async function updateProfile(req, res) {
-  const { fullName, phone, district, nationalIdNo } = req.body;
+  const { fullName, phone, district } = req.body;
 
   const fields = [];
   const values = [];
@@ -324,11 +333,10 @@ async function updateProfile(req, res) {
   }
   if (phone !== undefined) {
     const normalizedPhone = phone ? toE164(phone) : null;
-    if (normalizedPhone) {
-      const conflict = await pool.query('SELECT user_id FROM users WHERE phone = $1 AND user_id != $2', [normalizedPhone, req.user.userId]);
-      if (conflict.rows.length > 0) {
-        return res.status(409).json({ message: 'Another account is already using this phone number' });
-      }
+    if (!normalizedPhone) return res.status(400).json({ message: 'Phone number is required' });
+    const conflict = await pool.query('SELECT user_id FROM users WHERE phone = $1 AND user_id != $2', [normalizedPhone, req.user.userId]);
+    if (conflict.rows.length > 0) {
+      return res.status(409).json({ message: 'Another account is already using this phone number' });
     }
     values.push(normalizedPhone);
     fields.push(`phone = $${values.length}`);
@@ -336,10 +344,6 @@ async function updateProfile(req, res) {
   if (district !== undefined) {
     values.push(district || null);
     fields.push(`district = $${values.length}`);
-  }
-  if (nationalIdNo !== undefined) {
-    values.push(nationalIdNo || null);
-    fields.push(`national_id_no = $${values.length}`);
   }
 
   if (fields.length === 0) {
