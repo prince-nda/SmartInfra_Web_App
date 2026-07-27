@@ -1,0 +1,301 @@
+.landing {
+  overflow-x: hidden;
+}
+
+/* --- Hero --- */
+.landing-hero {
+  position: relative;
+  padding: var(--space-8) 0 var(--space-7);
+  background: linear-gradient(180deg, var(--color-accent-soft) 0%, var(--color-bg) 100%);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.landing-hero-photo {
+  background-image: url('/images/kigali-hero.jpg');
+  background-size: cover;
+  background-position: center 65%;
+  padding: var(--space-8) 0 var(--space-8);
+  border-bottom: none;
+}
+
+.landing-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10, 14, 22, 0.78) 0%, rgba(10, 14, 22, 0.72) 45%, rgba(10, 14, 22, 0.85) 100%);
+}
+
+.landing-hero-photo .landing-hero-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.landing-hero-photo .landing-eyebrow {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+  backdrop-filter: blur(4px);
+}
+
+.landing-hero-photo h1 {
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+.landing-hero-photo h1 .accent {
+  color: #6EE7DB;
+}
+
+.landing-hero-photo p {
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+.landing-hero-photo .landing-stat .value {
+  color: #fff;
+}
+
+.landing-hero-photo .landing-stat .label {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.landing-hero-photo .landing-hero-actions .btn-secondary {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+}
+
+.landing-hero-photo .landing-hero-actions .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.landing-hero-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.landing-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-5);
+}
+
+.landing-hero h1 {
+  font-size: clamp(2rem, 5vw, var(--fs-2xl));
+  margin-bottom: var(--space-4);
+  letter-spacing: -0.02em;
+}
+
+.landing-hero h1 .accent { color: var(--color-accent); }
+
+.landing-hero p {
+  font-size: var(--fs-md);
+  color: var(--color-ink-muted);
+  max-width: 560px;
+  margin: 0 auto var(--space-6);
+}
+
+.landing-hero-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.landing-hero-actions .btn {
+  padding: 0.8rem 1.6rem;
+  font-size: var(--fs-sm);
+}
+
+/* --- Stats strip --- */
+.landing-stats {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-7);
+  margin-top: var(--space-7);
+  flex-wrap: wrap;
+}
+
+.landing-stat {
+  text-align: center;
+}
+
+.landing-stat .value {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.landing-stat .label {
+  font-size: var(--fs-xs);
+  color: var(--color-ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* --- Sections --- */
+.landing-section {
+  padding: var(--space-8) 0;
+}
+
+.landing-section-header {
+  text-align: center;
+  max-width: 560px;
+  margin: 0 auto var(--space-6);
+}
+
+.landing-section-header h2 {
+  font-size: var(--fs-xl);
+  margin-bottom: var(--space-2);
+}
+
+.landing-section-header p {
+  color: var(--color-ink-muted);
+  font-size: var(--fs-sm);
+}
+
+/* --- Category grid (reuses CategoryIcon for visual continuity) --- */
+.landing-category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-3);
+}
+
+.landing-category-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-3);
+  text-align: center;
+}
+
+.landing-category-card .icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.landing-category-card span {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+/* --- How it works --- */
+.landing-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+}
+
+@media (max-width: 800px) {
+  .landing-steps { grid-template-columns: 1fr; }
+  .landing-features { grid-template-columns: 1fr; }
+}
+
+.landing-step {
+  padding: var(--space-5);
+  position: relative;
+}
+
+.landing-step .step-number {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--color-accent);
+  font-weight: 700;
+  margin-bottom: var(--space-3);
+}
+
+.landing-step h3 {
+  font-size: var(--fs-md);
+  margin-bottom: var(--space-2);
+}
+
+.landing-step p {
+  color: var(--color-ink-muted);
+  font-size: var(--fs-sm);
+}
+
+/* --- Feature grid (citizen + admin capabilities) --- */
+.landing-features {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-5);
+}
+
+.landing-feature-col {
+  padding: var(--space-6);
+}
+
+.landing-feature-col h3 {
+  font-size: var(--fs-md);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.landing-feature-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.landing-feature-col li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--color-ink-muted);
+}
+
+.landing-feature-col li svg {
+  color: var(--color-signal-resolved);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* --- Final CTA --- */
+.landing-cta {
+  text-align: center;
+  padding: var(--space-8) 0;
+  background: var(--color-surface-raised);
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.landing-cta h2 {
+  font-size: var(--fs-xl);
+  margin-bottom: var(--space-3);
+}
+
+.landing-cta p {
+  color: var(--color-ink-muted);
+  margin-bottom: var(--space-5);
+}
+
+.landing-footer {
+  padding: var(--space-6) 0;
+  text-align: center;
+  color: var(--color-ink-faint);
+  font-size: var(--fs-xs);
+}
