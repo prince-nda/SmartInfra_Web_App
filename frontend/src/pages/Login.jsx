@@ -19,7 +19,11 @@ export default function Login() {
     setSubmitting(true);
     try {
       const user = await login(form.email, form.password);
-      navigate(user.role === 'admin' ? '/admin/reports' : from, { replace: true });
+      if (user.must_change_password) {
+        navigate('/force-change-password', { replace: true });
+      } else {
+        navigate(user.role === 'admin' ? '/admin/reports' : from, { replace: true });
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Could not log in. Check your details and try again.');
     } finally {

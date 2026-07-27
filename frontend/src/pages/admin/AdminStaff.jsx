@@ -16,9 +16,9 @@ export default function AdminStaff() {
   const { user, isSuperAdmin } = useAuth();
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ fullName: '', email: '', phone: '', password: '', staffId: '', department: '', isSuperAdmin: false });
+  const [form, setForm] = useState({ fullName: '', email: '', phone: '', department: '', isSuperAdmin: false });
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [createdInfo, setCreatedInfo] = useState(null); // { fullName, email }
   const [submitting, setSubmitting] = useState(false);
   const [actioningId, setActioningId] = useState(null);
 
@@ -32,18 +32,13 @@ export default function AdminStaff() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
-    setSuccess('');
-
-    if (form.password.length < 8) {
-      setError('Password must be at least 8 characters');
-      return;
-    }
+    setCreatedInfo(null);
 
     setSubmitting(true);
     try {
-      await createStaffAccount(form);
-      setSuccess(`${form.fullName} was added as staff.`);
-      setForm({ fullName: '', email: '', phone: '', password: '', staffId: '', department: '', isSuperAdmin: false });
+      const { user: newUser } = await createStaffAccount(form);
+      setCreatedInfo({ fullName: newUser.full_name, email: newUser.email });
+      setForm({ fullName: '', email: '', phone: '', department: '', isSuperAdmin: false });
       loadStaff();
     } catch (err) {
       setError(err.response?.data?.message || 'Could not create staff account.');
@@ -112,11 +107,19 @@ export default function AdminStaff() {
 
       {error && <div className="alert alert-error" style={{ marginBottom: 'var(--space-4)' }}>{error}</div>}
 
+      {createdInfo && (
+        <div className="alert alert-success" style={{ marginBottom: 'var(--space-6)' }}>
+          {createdInfo.fullName} was added. Login credentials were emailed to <strong>{createdInfo.email}</strong> —
+          they'll be required to set their own password the first time they log in.
+        </div>
+      )}
+
       {isSuperAdmin ? (
         <div className="card" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
           <h3 style={{ marginBottom: 'var(--space-4)' }}>Add staff member</h3>
-
-          {success && <div className="alert alert-success" style={{ marginBottom: 'var(--space-4)' }}>{success}</div>}
+          <p className="hint" style={{ marginBottom: 'var(--space-4)' }}>
+            The system generates a temporary password automatically — the new staff member must change it on first login.
+          </p>
 
           <form onSubmit={handleSubmit}>
             <div className="staff-form-grid">
@@ -130,19 +133,11 @@ export default function AdminStaff() {
               </div>
               <div className="field">
                 <label>Phone</label>
-                <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
-              </div>
-              <div className="field">
-                <label>Staff ID</label>
-                <input required value={form.staffId} onChange={(e) => setForm({ ...form, staffId: e.target.value })} placeholder="ST-0002" />
+                <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="07xxxxxxxx" />
               </div>
               <div className="field">
                 <label>Department</label>
                 <input value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} placeholder="City of Kigali - Roads" />
-              </div>
-              <div className="field">
-                <label>Temporary password</label>
-                <input type="password" required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
               </div>
             </div>
             <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', fontSize: 'var(--fs-sm)', marginBottom: 'var(--space-4)' }}>
@@ -175,7 +170,8 @@ export default function AdminStaff() {
                 <span className="staff-name">{s.full_name}</span>
                 {s.is_super_admin && <span className="badge badge-in_progress" style={{ marginLeft: 'var(--space-2)' }}>Super-admin</span>}
                 {!s.is_active && <span className="badge badge-rejected" style={{ marginLeft: 'var(--space-2)' }}>Deactivated</span>}
-                <div className="staff-meta">{s.staff_id}{s.department ? ` · ${s.department}` : ''} · {s.email}</div>
+                {s.must_change_password && <span className="badge badge-submitted" style={{ marginLeft: 'var(--space-2)' }}>Pending password change</span>}
+                <div className="staff-meta">{s.department ? `${s.department} · ` : ''}{s.email}</div>
               </div>
 
               {isSuperAdmin && s.user_id !== user.user_id && (
