@@ -15,7 +15,7 @@ import Dashboard from './pages/Dashboard';
 import NewReport from './pages/NewReport';
 import ReportDetail from './pages/ReportDetail';
 import Notifications from './pages/Notifications';
-import Profile from './pages/profile';
+import Profile from './pages/Profile';
 import AdminReports from './pages/admin/AdminReports';
 import AdminAnalytics from './pages/admin/AdminAnalytics';
 import AdminStaff from './pages/admin/AdminStaff';
