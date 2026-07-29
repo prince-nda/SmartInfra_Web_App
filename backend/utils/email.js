@@ -1,29 +1,30 @@
-const nodemailer = require('nodemailer');
 require('dotenv').config();
-
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,       // e.g. smtp-relay.brevo.com
-  port: Number(process.env.SMTP_PORT) || 587,
-  secure: false,                      // STARTTLS on port 587
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
- 
-  connectionTimeout: 10000, // time to establish the TCP connection
-  greetingTimeout: 10000,   // time to wait for the SMTP greeting after connecting
-  socketTimeout: 15000,     // time to wait for any response before giving up
-});
 
 async function sendEmail({ to, subject, html, text }) {
   try {
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM || '"SmartInfra" <no-reply@smartinfra.rw>',
-      to,
-      subject,
-      text,
-      html,
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        'api-key': process.env.BREVO_API_KEY,
+      },
+      body: JSON.stringify({
+        sender: {
+          name: process.env.BREVO_SENDER_NAME || 'SmartInfra',
+          email: process.env.BREVO_SENDER_EMAIL,
+        },
+        to: [{ email: to }],
+        subject,
+        htmlContent: html,
+        textContent: text || undefined,
+      }),
     });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`Brevo API error ${response.status}: ${errorBody}`);
+    }
   } catch (err) {
     // Never let an email failure crash the request that triggered it;
     // log and let the caller decide whether to surface it.
@@ -53,7 +54,12 @@ function sendPasswordResetOtpEmail(to, fullName, otp) {
   });
 }
 
-
+/**
+ * Sent to a newly-created staff account with their login email and
+ * system-generated temporary password. They're forced to set their own
+ * password on first login (must_change_password), so this credential
+ * is single-use in practice.
+ */
 function sendStaffWelcomeEmail(to, fullName, tempPassword) {
   return sendEmail({
     to,
