@@ -20,10 +20,12 @@ async function createNotification({ userId, reportId, message }) {
 async function notifyReportSubmitted({ citizenId, citizenEmail, citizenName, citizenPhone, reportId }) {
   const message = `Your report #${reportId} has been received and marked as Submitted.`;
   await createNotification({ userId: citizenId, reportId, message });
-  await Promise.all([
+  // Fire-and-forget: a slow/unreachable email or SMS provider should never
+  // delay the citizen's "report submitted" response.
+  Promise.all([
     sendReportSubmittedEmail(citizenEmail, citizenName, reportId),
     citizenPhone ? sendReportSubmittedSms(citizenPhone, reportId) : null,
-  ]);
+  ]).catch((err) => console.error('notifyReportSubmitted delivery error:', err.message));
 }
 
 /** Fires the in-app notification, status-update email, and SMS (if a phone is on file). */
@@ -33,10 +35,11 @@ async function notifyStatusUpdate({ citizenId, citizenEmail, citizenName, citize
     ? `Your report #${reportId} status changed to "${statusLabel}". ${customMessage}`
     : `Your report #${reportId} status changed to "${statusLabel}".`;
   await createNotification({ userId: citizenId, reportId, message });
-  await Promise.all([
+  // Fire-and-forget, same reasoning as above.
+  Promise.all([
     sendStatusUpdateEmail(citizenEmail, citizenName, reportId, newStatus, customMessage),
     citizenPhone ? sendStatusUpdateSms(citizenPhone, reportId, newStatus, customMessage) : null,
-  ]);
+  ]).catch((err) => console.error('notifyStatusUpdate delivery error:', err.message));
 }
 
 /** GET /api/notifications/mine */

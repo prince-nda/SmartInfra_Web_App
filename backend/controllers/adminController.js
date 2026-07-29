@@ -389,7 +389,7 @@ async function createStaff(req, res) {
       details: { email: result.rows[0].email, isSuperAdmin: !!isSuperAdmin },
     });
 
-    await sendStaffWelcomeEmail(result.rows[0].email, result.rows[0].full_name, tempPassword);
+    sendStaffWelcomeEmail(result.rows[0].email, result.rows[0].full_name, tempPassword); // fire-and-forget
 
     return res.status(201).json({
       message: `Staff account created. Login credentials were emailed to ${result.rows[0].email}.`,

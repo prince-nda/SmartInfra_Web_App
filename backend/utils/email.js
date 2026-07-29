@@ -9,6 +9,10 @@ const transporter = nodemailer.createTransport({
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
+ 
+  connectionTimeout: 10000, // time to establish the TCP connection
+  greetingTimeout: 10000,   // time to wait for the SMTP greeting after connecting
+  socketTimeout: 15000,     // time to wait for any response before giving up
 });
 
 async function sendEmail({ to, subject, html, text }) {
@@ -49,12 +53,7 @@ function sendPasswordResetOtpEmail(to, fullName, otp) {
   });
 }
 
-/**
- * Sent to a newly-created staff account with their login email and
- * system-generated temporary password. They're forced to set their own
- * password on first login (must_change_password), so this credential
- * is single-use in practice.
- */
+
 function sendStaffWelcomeEmail(to, fullName, tempPassword) {
   return sendEmail({
     to,

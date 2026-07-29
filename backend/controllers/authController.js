@@ -62,7 +62,7 @@ async function register(req, res) {
       'INSERT INTO email_verification_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, $3)',
       [user.user_id, otpHash, expiresAt]
     );
-    await sendVerificationOtpEmail(user.email, user.full_name, rawOtp);
+    sendVerificationOtpEmail(user.email, user.full_name, rawOtp); // fire-and-forget, don't block the response on email delivery
 
     return res.status(201).json({
       message: 'Account created. Enter the verification code we emailed you to activate your account.',
@@ -190,7 +190,7 @@ async function resendOtp(req, res) {
       'INSERT INTO email_verification_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, $3)',
       [user.user_id, otpHash, expiresAt]
     );
-    await sendVerificationOtpEmail(user.email, user.full_name, rawOtp);
+    sendVerificationOtpEmail(user.email, user.full_name, rawOtp); // fire-and-forget, don't block the response on email delivery
 
     return res.json(genericResponse);
   } catch (err) {
@@ -223,7 +223,7 @@ async function forgotPassword(req, res) {
       'INSERT INTO password_reset_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, $3)',
       [user.user_id, otpHash, expiresAt]
     );
-    await sendPasswordResetOtpEmail(user.email, user.full_name, rawOtp);
+    sendPasswordResetOtpEmail(user.email, user.full_name, rawOtp); // fire-and-forget
 
     return res.json(genericResponse);
   } catch (err) {
