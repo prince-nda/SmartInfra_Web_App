@@ -6,8 +6,8 @@ damaged roads, illegal dumping) with photos and precise location; city
 administrators triage, assign, resolve, and track everything with full
 audit logging and analytics.
 
-- **Live demo:** 
-- **Demo video:** 
+- **Live demo:** https://smart-infra-web-app-psi.vercel.app/
+- **Demo video:** https://youtu.be/6QQWlZnmLhc
 - **SRS document:** 
 
 ---
