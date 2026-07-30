@@ -8,7 +8,7 @@ audit logging and analytics.
 
 - **Live demo:** https://smart-infra-web-app-psi.vercel.app/
 - **Demo video:** https://youtu.be/6QQWlZnmLhc
-- **SRS document:** 
+- **SRS document:** https://docs.google.com/document/d/1W8FP6VjMphEADXp6YHB6LwVkvd2KSqsddCZyTU2u3J0/edit?tab=t.0
 
 ---
 
@@ -110,11 +110,10 @@ DB_PORT=5432
 JWT_SECRET=generate_a_long_random_string_here
 JWT_EXPIRES_IN=30m
 
-SMTP_HOST=smtp-relay.brevo.com
-SMTP_PORT=587
-SMTP_USER=your_brevo_smtp_login
-SMTP_PASS=your_brevo_smtp_key
-SMTP_FROM="SmartInfra <no-reply@yourdomain.com>"
+# Brevo HTTP API
+BREVO_API_KEY= the key you just generated
+BREVO_SENDER_EMAIL= a verified sender email in your Brevo account
+BREVO_SENDER_NAME=SmartInfra
 
 # Optional - app falls back to email-only if left blank
 TWILIO_ACCOUNT_SID=
