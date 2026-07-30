@@ -1,4 +1,4 @@
-# SmartInfra
+# SmartInfra Web App
 
 **Keep Kigali clean and green.** A civic infrastructure reporting platform for
 Rwanda — citizens report issues (potholes, broken streetlights, water leaks,
