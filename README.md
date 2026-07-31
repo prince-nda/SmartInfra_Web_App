@@ -7,7 +7,7 @@ administrators triage, assign, resolve, and track everything with full
 audit logging and analytics.
 
 - **Live demo:** https://smart-infra-web-app-psi.vercel.app/
-- **Demo video:** https://drive.google.com/file/d/1rT1Au6EZePiuXqj93lYFWo8uDAmraWDN/view?usp=sharing
+- **Demo video:** https://drive.google.com/file/d/1Qr8QWZiTvn3GUBftuFT1iypxqr1xaBq_/view?usp=sharing
 - **SRS document:** https://docs.google.com/document/d/1W8FP6VjMphEADXp6YHB6LwVkvd2KSqsddCZyTU2u3J0/edit?tab=t.0
 
 ---
